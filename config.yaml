@@ -1,0 +1,13 @@
+source:
+  fighter: /run/media/will/5E26-DA3E/brawl_textures/fighter
+  stage: /run/media/will/5E26-DA3E/brawl_textures/stage
+destination: [/run/media/will/5E26-DA3E/private/wii/app/rsbe/bt]
+fighter:
+  Captain:
+    00_original: captain/america
+    01_red: captain/batman
+    02_green: captain/bender
+    03_blue: captain/noris
+  Dedede:
+    00: dedede/mafia
+    01: gengar
