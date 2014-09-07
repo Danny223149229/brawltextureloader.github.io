@@ -1,0 +1,7 @@
+source:
+  fighter: source/fighter
+destination:
+  fighter: destination/fighter
+fighter:
+  Peach:
+    00: peach/rosalina
