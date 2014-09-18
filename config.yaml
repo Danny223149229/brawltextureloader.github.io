@@ -5,9 +5,11 @@ destination:
 filetypes:
   - pcs
   - pac
+
 fighter:
   Peach:
-    00: Peach/Rosalina
-    01: Peach/Rosalina.pac
-    02: Peach/Rosalina.pcs
-    03: RESERVED
+    00: RESERVED
+    01: Peach/Rosalina
+    02:
+      - Peach/Rosalina.pcs
+      - Peach/Rosalina.pac

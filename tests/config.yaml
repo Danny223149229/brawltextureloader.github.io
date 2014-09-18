@@ -1,10 +1,13 @@
 source:
   fighter: source/fighter
 destination:
-  fighter: destination/fighter
+  fighter: 
+    - destination/fighter
+    - another_destination/fighter
 filetype:
   - pcs
   - pac
+
 fighter:
   Peach:
     00: Peach/Rosalina

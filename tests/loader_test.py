@@ -6,74 +6,72 @@ import yaml
 
 import loader
 
-# Tests should probably be highly specific cases and not use config file.
+"""
+Tests the functionality of the loader.  
+The config.yaml file in the tests directory should be an index of all use/corner cases of a config. When writing a test for a new config case, update the tests/config.yaml.
+The primary config.yaml in root will be kept as a clean template for getting started.
+"""
 
 os.chdir('tests')
 
 class TestTextureLoaderFunctions(unittest.TestCase):
     def setUp(self):
-        self.data = loader.init(self)
+        """Set sane defaults."""
+        self.data = yaml.load("""
+            source:
+              fighter: source/fighter
+            destination:
+              fighter: destination/fighter
+            filetype:
+              - pcs
+              - pac
+            fighter:
+              Peach:
+                00: Peach/Rosalina
+        """)
+        # Should probably not use this helper directly from loader in the tests.
+        loader._singles_as_list(self.data)
 
-    def test_load_folders(self):
-        """Source folders exist."""
-        for source_name, source in self.data['source'].items():
-            for fighter in self.data['fighter']:
-                for number, path in self.data['fighter'][fighter].items():
-                    with self.subTest(path=path):
-                        self.assertTrue(os.path.exists(os.path.join(source, fighter)))
-
-    def test_load_files(self):
-        """Source files exist."""
-        for source_name, source in self.data['source'].items():
-            for fighter, textures in self.data['fighter'].items():
-                for number, path in self.data['fighter'][fighter].items():
-                    if path != 'RESERVED':
-                        fullpath = os.path.join(source, path)
-                        extension = os.path.splitext(path)[1]
-                        if extension == '':
-                            for filetype in self.data['filetype']:
-                                with self.subTest('{0}.{1}'.format(fullpath, filetype)):
-                                    self.assertTrue(os.path.exists('{0}.{1}'.format(fullpath, filetype)))
-                        else:
-                            with self.subTest('{0}.{1}'.format(fullpath, path[:3])):
-                                self.assertTrue(os.path.exists(fullpath))
+    def test_init(self):
+        pass
 
     def test_mkdirs(self):
         """Appropriate destination folders were created."""
         loader.load(self)
-        for name, destination in self.data['destination'].items():
-            for fighter in self.data['fighter']:
-                    with self.subTest(fighter=fighter):
-                        self.assertTrue(os.path.exists(os.path.join(destination, fighter)))
+        self.assertTrue(os.path.exists(os.path.join(self.data['destination']['fighter'][0], 'Peach', 'FitPeach00.pcs')))
 
-    def test_cpfiles(self):
-        """Files are copied from source to destination and renamed."""
+    def test_load(self):
+        """Given a generic source name (no extension), files with specified filetypes are copied from source to destination and renamed."""
         loader.load(self)
-        for name, destination in self.data['destination'].items():
-            for fighter in self.data['fighter']:
-                for number, path in self.data['fighter'][fighter].items():
-                    if path != 'RESERVED':
-                        fullpath = os.path.join(destination, fighter, 'Fit{0}{1:02}'.format(fighter, number))
-                        source_name, extension = os.path.splitext(path)
-                        if extension == '':
-                            for filetype in self.data['filetype']:
-                                with self.subTest('{0}.{1}'.format(fullpath, filetype)):
-                                    self.assertTrue(os.path.exists('{0}.{1}'.format(fullpath, filetype)))
-                        else:
-                            with self.subTest(fullpath + extension):
-                                self.assertTrue(os.path.exists(fullpath + extension))
+        self.assertTrue(os.path.exists('destination/fighter/Peach/FitPeach00.pcs'))
+        self.assertTrue(os.path.exists('destination/fighter/Peach/FitPeach00.pac'))
+
+    def test_explicit(self):
+        """Source files with an explicitly called extension are copied and renamed."""
+        self.data['fighter'] = yaml.load("""
+            Peach:
+              00: Peach/Rosalina.pcs
+              01: Peach/Rosalina.pac
+        """)
+        loader._singles_as_list(self.data)
+        loader.load(self)
+        self.assertTrue(os.path.exists('destination/fighter/Peach/FitPeach00.pcs'))
+        self.assertTrue(os.path.exists('destination/fighter/Peach/FitPeach01.pac'))
 
     def test_reserved(self):
         """Numbers marked as RESERVED are ignored."""
+        self.data['fighter'] = yaml.load("""
+            Peach:
+              00: RESERVED
+              01: Peach/Rosalina
+        """)
+        loader._singles_as_list(self.data)
         loader.load(self)
-        for name, destination in self.data['destination'].items():
-            for fighter in self.data['fighter']:
-                for number, path in self.data['fighter'][fighter].items():
-                    if path == 'RESERVED':
-                        with self.subTest('{0}, {1}'.format(fighter, number)):
-                            self.assertFalse(glob.glob('{0}/{1}/*{2:02d}*.*'.format(destination, fighter, number)))
+        self.assertFalse(glob.glob('destination/fighter/Peach/*00*.*'))
+        self.assertTrue(os.path.exists('destination/fighter/Peach/FitPeach01.pcs'))
+        self.assertTrue(os.path.exists('destination/fighter/Peach/FitPeach01.pac'))
 
-    def test_pathlist(self):
+    def test_number_list(self):
         """When a number has a list, the list is handled properly."""
         self.data['fighter'] = yaml.load("""
             Peach:
@@ -81,9 +79,23 @@ class TestTextureLoaderFunctions(unittest.TestCase):
                 - Peach/Rosalina.pcs
                 - Peach/Rosalina.pac
         """)
+        loader._singles_as_list(self.data)
         loader.load(self)
         self.assertTrue(os.path.exists(os.path.join(self.data['destination']['fighter'][0], 'Peach', 'FitPeach00.pcs')))
         self.assertTrue(os.path.exists(os.path.join(self.data['destination']['fighter'][0], 'Peach', 'FitPeach00.pac')))
+
+    def test_destination_list(self):
+        """When a list of destinations are given, copies are made to each one."""
+        self.data['destination'] = yaml.load("""
+            fighter:
+              - destination/fighter
+              - another_destination/fighter
+        """)
+        loader._singles_as_list(self.data)
+        loader.load(self)
+        for destination in self.data['destination']['fighter']:
+            self.assertTrue(os.path.exists(destination + '/Peach/FitPeach00.pcs'))
+            self.assertTrue(os.path.exists(destination + '/Peach/FitPeach00.pac'))
 
     def tearDown(self):
         for name, destinations in self.data['destination'].items():
