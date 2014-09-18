@@ -32,9 +32,6 @@ class TestTextureLoaderFunctions(unittest.TestCase):
         # Should probably not use this helper directly from loader in the tests.
         loader._singles_as_list(self.data)
 
-    def test_init(self):
-        pass
-
     def test_mkdirs(self):
         """Appropriate destination folders were created."""
         loader.load(self)
@@ -89,7 +86,7 @@ class TestTextureLoaderFunctions(unittest.TestCase):
         self.data['destination'] = yaml.load("""
             fighter:
               - destination/fighter
-              - another_destination/fighter
+              - destination/another_fighter
         """)
         loader._singles_as_list(self.data)
         loader.load(self)
@@ -101,7 +98,6 @@ class TestTextureLoaderFunctions(unittest.TestCase):
         for name, destinations in self.data['destination'].items():
             for destination in destinations:
                 shutil.rmtree(destination)
-                os.makedirs(destination)
 
 if __name__ == '__main__':
     unittest.main()
