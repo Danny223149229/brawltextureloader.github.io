@@ -2,6 +2,7 @@ import unittest
 import os
 import shutil
 import glob
+import yaml
 
 import loader
 
@@ -72,10 +73,23 @@ class TestTextureLoaderFunctions(unittest.TestCase):
                         with self.subTest('{0}, {1}'.format(fighter, number)):
                             self.assertFalse(glob.glob('{0}/{1}/*{2:02d}*.*'.format(destination, fighter, number)))
 
+    def test_pathlist(self):
+        """When a number has a list, the list is handled properly."""
+        self.data['fighter'] = yaml.load("""
+            Peach:
+              00:
+                - Peach/Rosalina.pcs
+                - Peach/Rosalina.pac
+        """)
+        loader.load(self)
+        self.assertTrue(os.path.exists(os.path.join(self.data['destination']['fighter'][0], 'Peach', 'FitPeach00.pcs')))
+        self.assertTrue(os.path.exists(os.path.join(self.data['destination']['fighter'][0], 'Peach', 'FitPeach00.pac')))
+
     def tearDown(self):
-        for name, destination in self.data['destination'].items():
-            shutil.rmtree(destination)
-            os.makedirs(destination)
+        for name, destinations in self.data['destination'].items():
+            for destination in destinations:
+                shutil.rmtree(destination)
+                os.makedirs(destination)
 
 if __name__ == '__main__':
     unittest.main()

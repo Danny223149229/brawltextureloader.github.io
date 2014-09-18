@@ -11,6 +11,6 @@ fighter:
     01: Peach/Rosalina.pac
     02: Peach/Rosalina.pcs
     03: RESERVED
-    # 01:
-    # - Peach/Rosalina.pac
-    # - Peach/Rosalina.pcs
+    04:
+      - Peach/Rosalina.pac
+      - Peach/Rosalina.pcs
