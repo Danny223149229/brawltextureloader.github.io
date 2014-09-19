@@ -27,7 +27,8 @@ def load(self):
                                     extension = os.path.splitext(path)[1]
                                     if extension is '':
                                         for filetype in self.data['filetype']:
-                                            shutil.copy2('{0}.{1}'.format(source_fullpath, filetype), '{0}.{1}'.format(destination_fullpath, filetype))
+                                            if os.path.exists('{0}.{1}'.format(source_fullpath, filetype)):
+                                                shutil.copy2('{0}.{1}'.format(source_fullpath, filetype), '{0}.{1}'.format(destination_fullpath, filetype))
                                     else:
                                         shutil.copy2(source_fullpath, destination_fullpath + extension)
 

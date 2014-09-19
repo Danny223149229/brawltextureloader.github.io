@@ -17,3 +17,6 @@ fighter:
     04:
       - Peach/Rosalina.pac
       - Peach/Rosalina.pcs
+    # All available files of the default filetypes are copied, even if not all are there.
+    05: Peach_pcs/Rosalina 
+    06: Peach as Rosalina/Rosalina skin.pcs

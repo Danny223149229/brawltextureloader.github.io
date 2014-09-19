@@ -93,6 +93,27 @@ class TestTextureLoaderFunctions(unittest.TestCase):
         for destination in self.data['destination']['fighter']:
             self.assertTrue(os.path.exists(destination + '/Peach/FitPeach00.pcs'))
             self.assertTrue(os.path.exists(destination + '/Peach/FitPeach00.pac'))
+    
+    def test_single_filetype_present(self):
+        """When not all the default filetypes are present for a generic path, takes all of those present and ignores the lack of the rest."""
+        self.data['fighter'] = yaml.load("""
+            Peach:
+              00: Peach_pcs/Rosalina
+        """)
+        loader._singles_as_list(self.data)
+        loader.load(self)
+        self.assertTrue(os.path.exists('destination/fighter/Peach/FitPeach00.pcs'))
+        self.assertFalse(os.path.exists('destination/fighter/Peach/FitPeach00.pac'))
+
+    def test_spaces(self):
+        """Handle source files with spaces in their directory name and file name."""
+        self.data['fighter'] = yaml.load("""
+            Peach:
+              00: Peach as Rosalina/Rosalina skin.pcs
+        """)
+        loader._singles_as_list(self.data)
+        loader.load(self)
+        self.assertTrue(os.path.exists('destination/fighter/Peach/FitPeach00.pcs'))
 
     def tearDown(self):
         for name, destinations in self.data['destination'].items():
