@@ -151,6 +151,25 @@ class TestTextureLoaderFunctions(unittest.TestCase):
             'destination/fighter/Peach/FitPeach00.pcs'
         ))
 
+    def test_stage(self):
+        """Stage textures (.pac and .rel) placed in the right places."""
+        self.data['source'] = yaml.load("""
+              stage: source/stage
+        """)
+        self.data['stage'] = yaml.load("""
+            melee:
+              PALUTENA: Palutena/Clocktower
+        """)
+        loader._singles_as_list(self.data)
+        loader.load(self)
+
+        self.assertTrue(os.path.exists(
+            'destination/stage/melee/STGPALUTENA.PAC'
+        ))
+        self.assertTrue(os.path.exists(
+            'destination/module/st_palutena.rel'
+        ))
+
     def tearDown(self):
         for destination in self.data['destination']:
             shutil.rmtree(destination)

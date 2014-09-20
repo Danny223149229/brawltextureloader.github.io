@@ -27,21 +27,23 @@ def load(self):
     for category, sources in self.data['source'].items():
         for source in sources:
             for unit in self.data[category]:
-                for number, paths in self.data[category][unit].items():
+                for slot, paths in self.data[category][unit].items():
                     for path in paths:
                         if path != RESERVED:
                             for destination in self.data['destination']:
                                 source_fullpath = os.path.join(source, path)
-                                destination_dir = os.path.join(destination, category, unit)
-                                if not os.path.exists(destination_dir):
-                                    os.makedirs(destination_dir)
-                                extension = os.path.splitext(path)[1]
-                                if extension is '':
+                                if os.path.splitext(path)[1] is '':
                                     for filetype in FILETYPES[category]:
                                         if os.path.exists('{0}.{1}'.format(source_fullpath, filetype)):
-                                            shutil.copy2('{0}.{1}'.format(source_fullpath, filetype), '{0}/{1}.{2}'.format(destination_dir, _filename_format(category, unit, number), filetype))
+                                            destination_filepath = os.path.join(destination, _filename_format(category, filetype, unit, slot))
+                                            if not os.path.exists(os.path.dirname(destination_filepath)):
+                                                os.makedirs(os.path.dirname(destination_filepath))
+                                            shutil.copy2('{0}.{1}'.format(source_fullpath, filetype), destination_filepath)
                                 else:
-                                    shutil.copy2(source_fullpath, os.path.join(destination, category, unit, os.path.basename(path)))
+                                    destination_filepath = os.path.join(destination, category, unit, os.path.basename(path))
+                                    if not os.path.exists(os.path.dirname(destination_filepath)):
+                                        os.makedirs(os.path.dirname(destination_filepath))
+                                    shutil.copy2(source_fullpath, destination_filepath)
 
 def _singles_as_list(dictionary):
     """For a dictionary, Wraps single string entries in a list."""
@@ -51,9 +53,15 @@ def _singles_as_list(dictionary):
         elif isinstance(value, str):
             dictionary[key] = [value]
 
-def _filename_format(category, *args):
+def _filename_format(category, extension, *args):
     """Formats the filename according to the category (e.g. stage, fighter)."""
-    return {
-        'fighter': 'Fit{0}{1:02}'.format(args[0], args[1]),
-    }[category]
-
+    if category == 'fighter':
+        return {
+            'pcs': 'fighter/{0}/Fit{0}{1:02d}.pcs'.format(args[0], args[1]),
+            'pac': 'fighter/{0}/Fit{0}{1:02d}.pac'.format(args[0], args[1]),
+        }[extension]
+    elif category == 'stage':
+        return {
+            'pac': 'stage/{0}/STG{1}.PAC'.format(args[0], args[1].upper()),
+            'rel': 'module/st_{0}.rel'.format(args[1].lower()),
+        }[extension]
