@@ -7,9 +7,6 @@ destination:
     - another_destination/fighter
   stage:
     - destination/stage
-filetype:
-  - pcs
-  - pac
 
 fighter:
   Peach:
