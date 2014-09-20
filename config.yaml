@@ -2,9 +2,6 @@ source:
   fighter: source/fighter
 destination:
   fighter: destination/fighter
-filetypes:
-  - pcs
-  - pac
 
 fighter:
   Peach:

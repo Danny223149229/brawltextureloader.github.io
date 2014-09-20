@@ -26,9 +26,6 @@ class TestTextureLoaderFunctions(unittest.TestCase):
               fighter: source/fighter
             destination:
               fighter: destination/fighter
-            filetype:
-              - pcs
-              - pac
             fighter:
               Peach:
                 00: Peach/Rosalina
@@ -45,7 +42,7 @@ class TestTextureLoaderFunctions(unittest.TestCase):
         )))
 
     def test_load(self):
-        """Given a generic source name (no extension), files with specified
+        """Given a generic source name (no extension), files with correct 
         filetypes are copied from source to destination and renamed."""
         loader.load(self)
 

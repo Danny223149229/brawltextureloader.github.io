@@ -4,9 +4,6 @@ destination:
   fighter: 
     - destination/fighter
     - another_destination/fighter
-filetype:
-  - pcs
-  - pac
 
 fighter:
   Peach:

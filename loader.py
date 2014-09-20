@@ -9,6 +9,11 @@ import shutil
 
 RESERVED = 'RESERVED'
 
+FILETYPES = {
+    'fighter': ['pcs', 'pac'],
+    'stage': ['pac', 'rel'],
+}
+
 def init(self, config='config.yaml'):
     """Open config.yaml, load the yaml data, wrap singles in a list."""
     stream = open(config, 'r')
@@ -33,7 +38,7 @@ def load(self):
                                         os.makedirs(destination_dir)
                                     extension = os.path.splitext(path)[1]
                                     if extension is '':
-                                        for filetype in self.data['filetype']:
+                                        for filetype in FILETYPES[category]:
                                             if os.path.exists('{0}.{1}'.format(source_fullpath, filetype)):
                                                 shutil.copy2('{0}.{1}'.format(source_fullpath, filetype), '{0}/{1}.{2}'.format(destination_dir, _filename_format(category, unit, number), filetype))
                                     else:
