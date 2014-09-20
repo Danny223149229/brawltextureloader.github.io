@@ -1,9 +1,12 @@
 source:
   fighter: source/fighter
+  stage: source/stage
 destination:
   fighter: 
     - destination/fighter
     - another_destination/fighter
+  stage:
+    - destination/stage
 filetype:
   - pcs
   - pac
@@ -20,3 +23,8 @@ fighter:
     # All available files of the default filetypes are copied, even if not all are there.
     05: Peach_pcs/Rosalina 
     06: Peach as Rosalina/Rosalina skin
+
+stage:
+  melee:
+    BATTLEFIELD: Battlefield/Belltower
+    PALUTENA: Palutena/Clocktower
