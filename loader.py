@@ -30,19 +30,18 @@ def load(self):
                 for number, paths in self.data[category][unit].items():
                     for path in paths:
                         if path != RESERVED:
-                            for destinations in self.data['destination'].values():
-                                for destination in destinations:
-                                    source_fullpath = os.path.join(source, path)
-                                    destination_dir = os.path.join(destination, unit)
-                                    if not os.path.exists(destination_dir):
-                                        os.makedirs(destination_dir)
-                                    extension = os.path.splitext(path)[1]
-                                    if extension is '':
-                                        for filetype in FILETYPES[category]:
-                                            if os.path.exists('{0}.{1}'.format(source_fullpath, filetype)):
-                                                shutil.copy2('{0}.{1}'.format(source_fullpath, filetype), '{0}/{1}.{2}'.format(destination_dir, _filename_format(category, unit, number), filetype))
-                                    else:
-                                        shutil.copy2(source_fullpath, os.path.join(destination, unit, os.path.basename(path)))
+                            for destination in self.data['destination']:
+                                source_fullpath = os.path.join(source, path)
+                                destination_dir = os.path.join(destination, category, unit)
+                                if not os.path.exists(destination_dir):
+                                    os.makedirs(destination_dir)
+                                extension = os.path.splitext(path)[1]
+                                if extension is '':
+                                    for filetype in FILETYPES[category]:
+                                        if os.path.exists('{0}.{1}'.format(source_fullpath, filetype)):
+                                            shutil.copy2('{0}.{1}'.format(source_fullpath, filetype), '{0}/{1}.{2}'.format(destination_dir, _filename_format(category, unit, number), filetype))
+                                else:
+                                    shutil.copy2(source_fullpath, os.path.join(destination, category, unit, os.path.basename(path)))
 
 def _singles_as_list(dictionary):
     """For a dictionary, Wraps single string entries in a list."""

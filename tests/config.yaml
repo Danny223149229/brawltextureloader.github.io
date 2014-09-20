@@ -2,11 +2,7 @@ source:
   fighter: source/fighter
   stage: source/stage
 destination:
-  fighter: 
-    - destination/fighter
-    - another_destination/fighter
-  stage:
-    - destination/stage
+    - destination
 
 fighter:
   Peach:

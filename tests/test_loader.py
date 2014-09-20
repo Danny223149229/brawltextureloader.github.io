@@ -24,8 +24,7 @@ class TestTextureLoaderFunctions(unittest.TestCase):
         self.data = yaml.load("""
             source:
               fighter: source/fighter
-            destination:
-              fighter: destination/fighter
+            destination: destination
             fighter:
               Peach:
                 00: Peach/Rosalina
@@ -38,7 +37,7 @@ class TestTextureLoaderFunctions(unittest.TestCase):
         loader.load(self)
 
         self.assertTrue(os.path.exists(os.path.join(
-            self.data['destination']['fighter'][0], 'Peach', 'FitPeach00.pcs'
+            self.data['destination'][0], 'fighter', 'Peach', 'FitPeach00.pcs'
         )))
 
     def test_load(self):
@@ -99,28 +98,27 @@ class TestTextureLoaderFunctions(unittest.TestCase):
         loader.load(self)
 
         self.assertTrue(os.path.exists(os.path.join(
-            self.data['destination']['fighter'][0], 'Peach', 'FitPeach00.pcs'
+            self.data['destination'][0], 'fighter', 'Peach', 'FitPeach00.pcs'
         )))
         self.assertTrue(os.path.exists(os.path.join(
-            self.data['destination']['fighter'][0], 'Peach', 'FitPeach00.pac'
+            self.data['destination'][0], 'fighter', 'Peach', 'FitPeach00.pac'
         )))
 
     def test_destination_list(self):
         """When list of destinations are given, copies are made to each one."""
         self.data['destination'] = yaml.load("""
-            fighter:
-              - destination/fighter
-              - destination/another_fighter
+              - destination
+              - another_fighter
         """)
         loader._singles_as_list(self.data)
         loader.load(self)
 
-        for destination in self.data['destination']['fighter']:
+        for destination in self.data['destination']:
             self.assertTrue(os.path.exists(
-                destination + '/Peach/FitPeach00.pcs'
+                destination + '/fighter/Peach/FitPeach00.pcs'
             ))
             self.assertTrue(os.path.exists(
-                destination + '/Peach/FitPeach00.pac'
+                destination + '/fighter/Peach/FitPeach00.pac'
             ))
 
     def test_single_filetype_present(self):
@@ -154,9 +152,8 @@ class TestTextureLoaderFunctions(unittest.TestCase):
         ))
 
     def tearDown(self):
-        for destinations in self.data['destination'].values():
-            for destination in destinations:
-                shutil.rmtree(destination)
+        for destination in self.data['destination']:
+            shutil.rmtree(destination)
 
 if __name__ == '__main__':
     unittest.main()
