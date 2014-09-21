@@ -70,7 +70,7 @@ class TestTextureLoaderFunctions(unittest.TestCase):
         ))
 
     def test_reserved(self):
-        """Numbers marked as RESERVED are ignored."""
+        """Slots marked as RESERVED are ignored."""
         self.data['fighter'] = yaml.load("""
             Peach:
               00: RESERVED
@@ -87,8 +87,19 @@ class TestTextureLoaderFunctions(unittest.TestCase):
             'destination/fighter/Peach/FitPeach01.pac'
         ))
 
-    def test_number_list(self):
-        """When a number has a list, the list is handled properly."""
+    def test_blank(self):
+        """A slot that has nothing is ignored."""
+        self.data['fighter'] = yaml.load("""
+            Peach:
+              00:
+        """)
+        loader._singles_as_list(self.data)
+        loader.load(self)
+
+        self.assertFalse(os.path.exists('destination/fighter/Peach'))
+
+    def test_slot_list(self):
+        """When a slot has a list, the list is handled properly."""
         self.data['fighter'] = yaml.load("""
             Peach:
               00:
@@ -172,7 +183,8 @@ class TestTextureLoaderFunctions(unittest.TestCase):
 
     def tearDown(self):
         for destination in self.data['destination']:
-            shutil.rmtree(destination)
+            if os.path.exists(destination):
+                shutil.rmtree(destination)
 
 if __name__ == '__main__':
     unittest.main()

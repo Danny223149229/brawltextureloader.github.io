@@ -28,8 +28,8 @@ def load(self):
         for source in sources:
             for unit in self.data[category]:
                 for slot, paths in self.data[category][unit].items():
-                    for path in paths:
-                        if path != RESERVED:
+                    if paths != None and paths[0] != RESERVED:
+                        for path in paths:
                             for destination in self.data['destination']:
                                 source_fullpath = os.path.join(source, path)
                                 if os.path.splitext(path)[1] is '':
