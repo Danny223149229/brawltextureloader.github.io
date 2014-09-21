@@ -13,6 +13,9 @@ class Loader(object):
         'stage': ['pac', 'rel'],
     }
 
+    def __init__(self):
+        pass
+
     def init(self, config='config.yaml'):
         """Open config.yaml, load the yaml data, wrap singles in a list."""
         stream = open(config, 'r')
